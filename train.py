@@ -77,11 +77,6 @@ def main(config, resume):
     
     # Creating M labelled: Model using labelled dataset
     trainer.train()
-    # Saving the labelled model
-    torch.save(model.state_dict(), 'statedict/alexnet_labelled.pth')
-    # Loading the saved model
-    # model.load_state_dict(torch.load('statedict/alexnet_labelled.pth'), strict=False)
-    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch Template')
