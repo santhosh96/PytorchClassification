@@ -8,7 +8,6 @@ import numpy as np
 from datetime import datetime
 from pytz import timezone
 from utils.util import ensure_dir
-from utils.visualization import WriterTensorboardX
 
 class BaseTrainer:
     """
