@@ -13,6 +13,8 @@ import model.vgg19model as module_arch_vgg
 import model.inceptionv3model as module_arch_inception
 import model.alexnetmodel as module_arch_alexnet
 
+from utils.util import ensure_dir
+
 from train import get_instance
 from sklearn.metrics import classification_report
 
@@ -90,7 +92,9 @@ def main(config, resume, target_class):
     
     cl_report = classification_report(y_true, y_pred, target_names=target_names)
     
-    file_name = config['arch']['type']+'_classification_report.txt'
+    ensure_dir('results')
+    
+    file_name = os.path.join('results', config['arch']['type']+'_classification_report.txt')
     
     with open(file_name,'w') as fh:
         fh.writelines(cl_report)
