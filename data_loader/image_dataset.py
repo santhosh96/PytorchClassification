@@ -19,6 +19,9 @@ def filereader(datapath,file):
 		
 		if 'target' in entry:
 			target = entry['target']
+			
+		if 'labels' in entry:
+			target = entry['labels']
 				
 	# reshaping the numpy array
 	data = np.vstack(data).reshape(-1, 3, 32, 32)
@@ -26,6 +29,8 @@ def filereader(datapath,file):
 	data = data.transpose((0, 2, 3, 1))
 	# returning the zip od data and target
 	if 'target' in entry:
+		return [data.astype('uint8'), np.array(target)]
+	if 'labels' in entry:
 		return [data.astype('uint8'), np.array(target)]
 	return [data.astype('uint8')]
 
@@ -46,7 +51,7 @@ class ImageDataset(Dataset):
 		
 		image = self.data[0][idx]
 		image = Image.fromarray(image)
-        
+		
 		if len(self.data) > 1:
 			label = self.data[1][idx]
 		
