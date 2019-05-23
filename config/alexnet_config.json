@@ -24,6 +24,19 @@
         }
     },
     
+    "testloader": {
+        "type": "DataLoader",
+        "args": {
+            "data_dir": "data/cifar-10-batches-py",
+            "file": "test_batch",
+            "batch_size": 32,
+            "shuffle": true,
+            "validation_split": 0,
+            "num_workers": 4,
+            "input_size": 224
+        }
+    },
+    
     "arch": {
         "type": "AlexNet",
         "args": {
@@ -58,7 +71,7 @@
     },
     
     "trainer": {
-        "epochs": 100,
+        "epochs": 1,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
