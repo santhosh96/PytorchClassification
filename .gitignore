@@ -1,0 +1,7 @@
+
+# not track content of these folders
+
+.ipynb_checkpoints/
+__pycache__/
+saved/
+data/cifar-10-batches-py/
