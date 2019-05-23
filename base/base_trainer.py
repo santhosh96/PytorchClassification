@@ -52,8 +52,7 @@ class BaseTrainer:
         self.start_epoch = 1
 
         # setup directory for checkpoint saving
-        start_time = datetime.now(timezone('US/Pacific')).strftime('%m/%d/%Y_%H:%M:%S')
-        start_time = config['arch']['type'] + '_' + start_time
+        start_time = str(datetime.now(timezone('US/Pacific')).strftime('%m-%d_%H:%M:%S')) + '_' +str(config['arch']['type'])
         self.checkpoint_dir = os.path.join(cfg_trainer['save_dir'], config['name'], start_time)
 
         # Save configuration file into checkpoint directory:
@@ -104,7 +103,8 @@ class BaseTrainer:
                 else:
                     log[key] = value
             
-            print('validation accuracy : ',round(100*log['val_overall_acc'], 2))
+            print('validation accuracy : ', round(100*log['val_overall_acc'], 2))
+            print('validation class wise accuracy : ', log['val_cl_acc'])
             
             # evaluate model performance according to configured metric, save best checkpoint as model_best
             best = False
