@@ -2,12 +2,13 @@ import os
 import math
 import json
 import logging
-import datetime
 import torch
-from utils.util import ensure_dir
-from utils.visualization import WriterTensorboardX
 import pandas as pd
 import numpy as np
+from datetime import datetime
+from pytz import timezone
+from utils.util import ensure_dir
+from utils.visualization import WriterTensorboardX
 
 class BaseTrainer:
     """
@@ -51,7 +52,8 @@ class BaseTrainer:
         self.start_epoch = 1
 
         # setup directory for checkpoint saving
-        start_time = datetime.datetime.now().strftime('%m%d_%H%M%S')
+        start_time = datetime.now(timezone('US/Pacific')).strftime('%m/%d/%Y_%H:%M:%S')
+        start_time = config['arch']['type'] + '_' + start_time
         self.checkpoint_dir = os.path.join(cfg_trainer['save_dir'], config['name'], start_time)
 
         # Save configuration file into checkpoint directory:
