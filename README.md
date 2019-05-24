@@ -1,5 +1,6 @@
 # Pytorch Classification
 A generalized structure for building image classification models using Pytorch
+> This repository is extension and modification of [pytorch-template] (https://github.com/victoresque/pytorch-template)
 
 ## Getting Started
 
