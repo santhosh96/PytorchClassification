@@ -87,3 +87,102 @@ pip3 install -r requirements.txt
       ├── util.py -> utility for ensuring a given directory is present
       └── logger.py -> module for logging
 ```
+## Usage
+
+#### Training the model
+```
+python3 train.py -c config/alexnet_config.json
+```
+#### Testing the model
+```
+python3 test.py -r saved/path_to/best_model.pth
+```
+## Config file description
+```
+{
+    "name": "CIFAR10",                                // Name of the training session
+    "n_gpu": 1,                                       // Number of gpus to be used
+    
+    "dataextract": {                                  // For extracting the data from .pth
+        "type": "Extractor",    
+        "args": {
+            "root": "data",                           // root folder of the saved data
+            "base": "cifar-10-batches-py",            // base folder of the saved data
+            "datalist": ["data_batch_1","data_batch_2","data_batch_3","data_batch_4","data_batch_5"]  // data to be extracted
+        }
+    },
+    
+    "trainloader": {                                  // dataloader for training
+        "type": "DataLoader",                         // selecting data loader
+        "args": {
+            "data_dir": "data/cifar-10-batches-py",   // dataset path
+            "file": "training.pickle",                // file name 
+            "batch_size": 32,                         // batch size
+            "shuffle": true,                          // shuffle training data before splitting
+            "validation_split": 0.2,                  // size of validation dataset. float(portion) or int(number of samples)
+            "num_workers": 4,                         // number of workers
+            "input_size": 224                         // input size transformation
+        }
+    },
+    
+    "testloader": {                                   // dataloader for testing
+        "type": "DataLoader",                         // selecting data loader
+        "args": {
+            "data_dir": "data/cifar-10-batches-py",   // dataset path   
+            "file": "test_batch",                     // file name 
+            "batch_size": 32,                         // batch size
+            "shuffle": true,                          // shuffle training data before splitting
+            "validation_split": 0,                    // size of validation dataset. float(portion) or int(number of samples)
+            "num_workers": 4,                         // number of workers
+            "input_size": 224                         // input size transformation
+        }
+    },
+    
+    "arch": {                                         
+        "type": "AlexNet",                            // model architecture type
+        "args": {
+            "trained": true,                          // trained or not
+            "classes": 10,                            // number of classes in training data
+            "model_path": "../../models/"             // path of the model
+        }
+    },
+    
+    "loss": "crossentropyloss",                       // loss function
+    
+    "metrics": [
+        "overall_acc", "top3_acc"                     // metrics array
+    ],
+    
+    "class_metric": "class_accuracy",                 // additional class wise metrics
+    
+    "optimizer": {
+        "type": "SGD",
+        "args":{
+            "lr": 0.001,                              // learning rate
+            "momentum": 0.9                           // momentum
+        }
+    },
+    
+    "lr_scheduler": {
+        "type": "StepLR",                             // learning rate scheduler
+        "args": {
+            "step_size": 7,
+            "gamma": 0.1
+        }
+    },
+    
+    "trainer": {
+        "epochs": 50,                               // number of training epochs
+        "save_dir": "saved/",                       // directory for saving the model
+        "save_period": 1,                           // save checkpoints every save_period epochs
+        "verbosity": 2,                             // 0: quiet, 1: per epoch, 2: full
+        
+        "monitor": "min val_loss",                  // mode and metric for model performance monitoring. set 'off' to disable.
+        "early_stop": 30,                           // number of epochs to wait before early stop. set 0 to disable.
+        
+        "tensorboardX": true,                       // tensorboardX is disabled
+        "log_dir": "saved/runs"                     // saving directory of logs
+    }
+
+}
+```
