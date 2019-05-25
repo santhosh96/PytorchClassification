@@ -12,6 +12,7 @@ import model.metric as module_metric
 import model.vgg19model as module_arch_vgg
 import model.inceptionv3model as module_arch_inception
 import model.alexnetmodel as module_arch_alexnet
+import model.test_model as module_arch_testnet
 
 from utils.util import ensure_dir
 
@@ -39,8 +40,11 @@ def main(config, resume, target_class):
         model_instance = get_instance(module_arch_vgg, 'arch', config)
     if config['arch']['type'] == 'AlexNet':
         model_instance = get_instance(module_arch_alexnet, 'arch', config)
-        
-    model = model_instance.build_model(config['arch']['args']['model_path'])
+    if config['arch']['type'] == 'Net':
+        model = get_instance(module_arch_testnet, 'arch', config)
+    
+    if config['arch']['type'] != 'Net':
+        model = model_instance.build_model(config['arch']['args']['model_path'])
 
     # get function handles of loss and metrics
     loss_fn = getattr(module_loss, config['loss'])
@@ -95,6 +99,10 @@ def main(config, resume, target_class):
     ensure_dir('results')
     
     file_name = os.path.join('results', config['arch']['type']+'_classification_report.txt')
+    
+    accuracy = torch.sum(y_pred == y_true).item() / len(y_true)
+    
+    print('\nAccuracy of the model : ',accuracy)
     
     with open(file_name,'w') as fh:
         fh.writelines(cl_report)
