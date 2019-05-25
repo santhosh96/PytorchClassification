@@ -10,6 +10,7 @@ import data_loader.data_loaders as module_data
 import model.vgg19model as module_arch_vgg
 import model.inceptionv3model as module_arch_inception
 import model.alexnetmodel as module_arch_alexnet
+import model.test_model as module_arch_testnet
 
 import model.loss as module_loss
 import model.metric as module_metric
@@ -45,8 +46,13 @@ def main(config, resume):
         model_instance = get_instance(module_arch_vgg, 'arch', config)
     if config['arch']['type'] == 'AlexNet':
         model_instance = get_instance(module_arch_alexnet, 'arch', config)
-        
-    model = model_instance.build_model(config['arch']['args']['model_path'])
+    if config['arch']['type'] == 'Net':
+        model = get_instance(module_arch_testnet, 'arch', config)
+    
+    if config['arch']['type'] != 'Net':
+        model = model_instance.build_model(config['arch']['args']['model_path'])
+    
+    print(model)
     
     # loss function
     loss = getattr(module_loss, config['loss'])
