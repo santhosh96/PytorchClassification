@@ -58,20 +58,16 @@ class Trainer(BaseTrainer):
 
             self.optimizer.zero_grad()
             
-            if self.config['arch']['type'] == 'VGG19Model':
-                output = self.model(data)
-                loss = self.loss(output, target)
-                
             if self.config['arch']['type'] == 'InceptionV3':
                 output, aux_output = self.model(data)
                 loss1 = self.loss(output, target)
                 loss2 = self.loss(aux_output, target)
                 loss = loss1 + 0.4 * loss2
             
-            if self.config['arch']['type'] == 'AlexNet':
+            else:
                 output = self.model(data)
                 loss = self.loss(output, target)
-            
+                
             loss.backward()
             self.optimizer.step()
             
