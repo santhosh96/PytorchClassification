@@ -20,7 +20,6 @@ from trainer import Trainer
 from utils import Logger
 
 def get_instance(module, name, config, *args):
-    # getattr(module=data_loaders.py, config[data_loader][type]='StrClnDataLoader')
     return getattr(module, config[name]['type'])(*args, **config[name]['args'])
 
 def main(config, resume):
