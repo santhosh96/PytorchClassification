@@ -102,7 +102,10 @@ python3 test.py -r saved/path_to/best_model.pth
 ```
 {
     "name": "CIFAR10",                                // Name of the training session
+    
     "n_gpu": 1,                                       // Number of gpus to be used
+    
+    "gpu_id": 1,
     
     "dataextract": {                                  // For extracting the data from .pth
         "type": "Extractor",    
@@ -118,7 +121,7 @@ python3 test.py -r saved/path_to/best_model.pth
         "args": {
             "data_dir": "data/cifar-10-batches-py",   // dataset path
             "file": "training.pickle",                // file name 
-            "batch_size": 32,                         // batch size
+            "batch_size": 100,                        // batch size
             "shuffle": true,                          // shuffle training data before splitting
             "validation_split": 0.2,                  // size of validation dataset. float(portion) or int(number of samples)
             "num_workers": 4,                         // number of workers
@@ -127,7 +130,7 @@ python3 test.py -r saved/path_to/best_model.pth
     },
     
     "testloader": {                                   // dataloader for testing
-        "type": "DataLoader",                         // selecting data loader
+        "type": "TestLoader",                         // selecting data loader
         "args": {
             "data_dir": "data/cifar-10-batches-py",   // dataset path   
             "file": "test_batch",                     // file name 
@@ -142,7 +145,7 @@ python3 test.py -r saved/path_to/best_model.pth
     "arch": {                                         
         "type": "AlexNet",                            // model architecture type
         "args": {
-            "trained": true,                          // trained or not
+            "trained": false,                         // trained or not
             "classes": 10,                            // number of classes in training data
             "model_path": "../../models/"             // path of the model
         }
@@ -173,16 +176,13 @@ python3 test.py -r saved/path_to/best_model.pth
     },
     
     "trainer": {
-        "epochs": 50,                               // number of training epochs
+        "epochs": 100,                              // number of training epochs
         "save_dir": "saved/",                       // directory for saving the model
         "save_period": 1,                           // save checkpoints every save_period epochs
         "verbosity": 2,                             // 0: quiet, 1: per epoch, 2: full
         
         "monitor": "min val_loss",                  // mode and metric for model performance monitoring. set 'off' to disable.
-        "early_stop": 30,                           // number of epochs to wait before early stop. set 0 to disable.
-        
-        "tensorboardX": true,                       // tensorboardX is disabled
-        "log_dir": "saved/runs"                     // saving directory of logs
+        "early_stop": 10,                           // number of epochs to wait before early stop. set 0 to disable.
     }
 
 }
