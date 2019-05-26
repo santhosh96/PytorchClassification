@@ -52,8 +52,6 @@ def main(config, resume):
     if config['arch']['type'] != 'Net':
         model = model_instance.build_model(config['arch']['args']['model_path'])
     
-    print(model)
-    
     # loss function
     loss = getattr(module_loss, config['loss'])
     
