@@ -9,7 +9,7 @@ class DataLoader(BaseDataLoader):
         
         # transformations to be applied
         trsfm = transforms.Compose([
-#                     transforms.Resize(input_size),
+                    transforms.Resize(input_size),
                     transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),
                     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
@@ -30,7 +30,7 @@ class TestLoader(BaseDataLoader):
         
         # transformations to be applied
         trsfm = transforms.Compose([
-#                     transforms.Resize(input_size),
+                    transforms.Resize(input_size),
                     transforms.ToTensor(),
                     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
                 ])
