@@ -6,7 +6,7 @@ import pickle
 import numpy as np
 from PIL import Image
 
-def filereader(datapath,file):
+def filereader(datapath,file,test):
 	file_path = os.path.join(datapath, file)
 	with open(file_path, 'rb') as f:
 		# for handling the encoding
@@ -22,7 +22,13 @@ def filereader(datapath,file):
 			
 		if 'labels' in entry:
 			target = entry['labels']
-				
+	
+		if test:
+			# reshaping the numpy array
+			data = np.vstack(data).reshape(-1, 3, 32, 32)
+			# transposing the array with the format of (32x32x3)
+			data = data.transpose((0, 2, 3, 1))
+	
 	# returning the zip od data and target
 	if 'target' in entry:
 		return [data.astype('uint8'), np.array(target)]
@@ -32,12 +38,13 @@ def filereader(datapath,file):
 
 class ImageDataset(Dataset):
 	
-	def __init__(self, datapath, file, transform=None):
+	def __init__(self, datapath, file, test, transform=None):
 		
 		self.datapath = datapath
 		self.file = file
+		self.test = test
 		self.transform = transform
-		self.data = filereader(self.datapath,self.file)
+		self.data = filereader(self.datapath,self.file,self.test)
 	
 	def __len__(self):
 		
@@ -46,6 +53,7 @@ class ImageDataset(Dataset):
 	def __getitem__(self, idx):
 		
 		image = self.data[0][idx]
+
 		image = Image.fromarray(image)
 		
 		if len(self.data) > 1:
