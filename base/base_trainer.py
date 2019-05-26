@@ -59,7 +59,7 @@ class BaseTrainer:
         config_save_path = os.path.join(self.checkpoint_dir, 'config.json')
         with open(config_save_path, 'w') as handle:
             json.dump(config, handle, indent=4, sort_keys=False)
-
+        
         if resume:
             self._resume_checkpoint(resume)
     
@@ -84,12 +84,16 @@ class BaseTrainer:
         """
         
         # Creating the M_labelled model
+        output_save_path = os.path.join(self.checkpoint_dir, 'logs.txt')
+        
+        w = open(output_save_path, 'a+')
         
         for epoch in range(self.start_epoch, self.epochs + 1):
             # _train_epoch is in trainer.py
             result = self._train_epoch(epoch)
             
-            print('\nepoch ',epoch)
+            w.write('Training log')
+            w.write('\n\nepoch : {}\n\n'.format(epoch))
             
             # save logged informations into log dict
             log = {'epoch': epoch}
@@ -102,8 +106,15 @@ class BaseTrainer:
                 else:
                     log[key] = value
             
-            print('validation accuracy : ', round(100*log['val_overall_acc'], 2))
-            print('validation class wise accuracy : ', log['val_cl_acc'])
+            w.write('training accuracy : {}\n'.format(round(100*log['train_overall_acc'], 2)))
+            
+            if 'val_overall_acc' in log.keys():
+#                 print('validation accuracy : ', round(100*log['val_overall_acc'], 2))
+#                 print('validation class wise accuracy : ', log['val_cl_acc'])
+                w.write('validation accuracy : {}\n'.format(round(100*log['val_overall_acc'], 2)))
+                w.write('validation class wise accuracy : {}\n'.format(log['val_cl_acc']))
+            
+#             print('training class wise accuracy', round(100*log['train_cl_acc'], 2))
             
             # evaluate model performance according to configured metric, save best checkpoint as model_best
             best = False
@@ -127,13 +138,16 @@ class BaseTrainer:
                     not_improved_count += 1
 
                 if not_improved_count > self.early_stop:
-                    print("\nValidation performance didn\'t improve for {} epochs. Training stops.".format(self.early_stop))
+                    w.write("\nValidation performance didn\'t improve for {} epochs. Training stops.".format(self.early_stop))
+                    # print("\nValidation performance didn\'t improve for {} epochs. Training stops.".format(self.early_stop))
                     self.logger.info("Validation performance didn\'t improve for {} epochs. Training stops.".format(self.early_stop))
                     break
 
             if epoch % self.save_period == 0:
-                self._save_checkpoint(epoch, save_best=best)
-                
+                self._save_checkpoint(epoch, w, save_best=best)
+            
+        w.close()
+            
         return self.model
             
     def _train_epoch(self, epoch):
@@ -144,7 +158,7 @@ class BaseTrainer:
         """
         raise NotImplementedError
 
-    def _save_checkpoint(self, epoch, save_best=False):
+    def _save_checkpoint(self, epoch, w, save_best=False):
         """
         Saving checkpoints
 
@@ -164,11 +178,15 @@ class BaseTrainer:
             'config': self.config
         }
         
+        filename = str(self.checkpoint_dir+'/'+'checkpoint-epoch{}.pth'.format(epoch))
+        torch.save(state, filename)
+        self.logger.info("Saving checkpoint: {} ...".format(filename))
+        w.write("Saving checkpoint: {} ...\n".format(filename))
         if save_best:
             best_path = os.path.join(self.checkpoint_dir, 'model_best.pth')
-            print("Saving current best: {} ...".format('model_best.pth'))
+            w.write("Saving current best: {} ...\n".format('model_best.pth'))
             torch.save(state, best_path)
-#             self.logger.info("Saving current best: {} ...".format('model_best.pth'))
+            self.logger.info("Saving current best: {} ...".format('model_best.pth'))
 
     def _resume_checkpoint(self, resume_path):
         """
