@@ -2,7 +2,10 @@ import os
 import argparse
 import torch
 import json
+
 from tqdm import tqdm
+from datetime import datetime
+from pytz import timezone
 
 import data_loader.data_loaders as module_data
 
@@ -58,7 +61,8 @@ def main(config, resume, target_class):
     model.load_state_dict(state_dict)
 
     # prepare model for testing
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    dev = 'cuda:'+str(config['gpu_id'])
+    device = torch.device(dev if torch.cuda.is_available() else 'cpu')
     model = model.to(device)
     model.eval()
 
@@ -96,16 +100,20 @@ def main(config, resume, target_class):
     
     cl_report = classification_report(y_true, y_pred, target_names=target_names)
     
-    ensure_dir('results')
+    save_dir = str('results/'+args.resume.split('/')[1]+'/'+args.resume.split('/')[2])
     
-    file_name = os.path.join('results', config['arch']['type']+'_classification_report.txt')
+    ensure_dir(save_dir)
+    
+    file_name = os.path.join(save_dir, 'classification_report.txt')
     
     accuracy = torch.sum(y_pred == y_true).item() / len(y_true)
     
-    print('\nAccuracy of the model : ',accuracy)
+    print('\nAccuracy of the model : {}'.format(round(100*accuracy, 2)))
     
     with open(file_name,'w') as fh:
+        fh.writelines('Accuracy of the model : {}\n\n'.format(round(100*accuracy, 2)))
         fh.writelines(cl_report)
+        
     
 
 if __name__ == '__main__':
@@ -128,5 +136,7 @@ if __name__ == '__main__':
         os.environ["CUDA_VISIBLE_DEVICES"]=args.device
     if args.target:
         target_class = json.load(open(args.target))
-
+    
+    
+        
     main(config, args.resume, target_class)
