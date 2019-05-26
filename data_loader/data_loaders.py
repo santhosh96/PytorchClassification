@@ -18,8 +18,10 @@ class DataLoader(BaseDataLoader):
         # path of the text file that consists each image name and label
         self.data_dir = data_dir
         
+        test = False
+        
         # creating the dataset object
-        self.dataset = ImageDataset(self.data_dir, file, transform = trsfm)
+        self.dataset = ImageDataset(self.data_dir, file, test, transform = trsfm)
         
         # passing dataset object along with other parameters 
         super(DataLoader, self).__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
@@ -38,8 +40,10 @@ class TestLoader(BaseDataLoader):
         # path of the text file that consists each image name and label
         self.data_dir = data_dir
         
+        test = True
+        
         # creating the dataset object
-        self.dataset = ImageDataset(self.data_dir, file, transform = trsfm)
+        self.dataset = ImageDataset(self.data_dir, file, test, transform = trsfm)
         
         # passing dataset object along with other parameters 
         super(TestLoader, self).__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
