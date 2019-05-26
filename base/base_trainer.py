@@ -18,7 +18,7 @@ class BaseTrainer:
         self.logger = logging.getLogger(self.__class__.__name__)
 
         # setup GPU device if available, move model into configured device
-        self.device, device_ids = self._prepare_device(config['n_gpu'])
+        self.device, device_ids = self._prepare_device(config['n_gpu'], config['gpu_id'])
         self.model = model.to(self.device)
         if len(device_ids) > 1:
             self.model = torch.nn.DataParallel(model, device_ids=device_ids)
@@ -63,7 +63,7 @@ class BaseTrainer:
         if resume:
             self._resume_checkpoint(resume)
     
-    def _prepare_device(self, n_gpu_use):
+    def _prepare_device(self, n_gpu_use, gpu_id):
         """ 
         setup GPU device if available, move model into configured device
         """ 
@@ -74,7 +74,8 @@ class BaseTrainer:
         if n_gpu_use > n_gpu:
             self.logger.warning("Warning: The number of GPU\'s configured to use is {}, but only {} are available on this machine.".format(n_gpu_use, n_gpu))
             n_gpu_use = n_gpu
-        device = torch.device('cuda:0' if n_gpu_use > 0 else 'cpu')
+        dev = 'cuda:'+str(gpu_id)
+        device = torch.device(dev if n_gpu_use > 0 else 'cpu')
         list_ids = list(range(n_gpu_use))
         return device, list_ids
 
@@ -83,16 +84,16 @@ class BaseTrainer:
         Full training logic
         """
         
-        # Creating the M_labelled model
         output_save_path = os.path.join(self.checkpoint_dir, 'logs.txt')
         
         w = open(output_save_path, 'a+')
+        
+        w.write('Training log')
         
         for epoch in range(self.start_epoch, self.epochs + 1):
             # _train_epoch is in trainer.py
             result = self._train_epoch(epoch)
             
-            w.write('Training log')
             w.write('\n\nepoch : {}\n\n'.format(epoch))
             
             # save logged informations into log dict
@@ -109,12 +110,8 @@ class BaseTrainer:
             w.write('training accuracy : {}\n'.format(round(100*log['train_overall_acc'], 2)))
             
             if 'val_overall_acc' in log.keys():
-#                 print('validation accuracy : ', round(100*log['val_overall_acc'], 2))
-#                 print('validation class wise accuracy : ', log['val_cl_acc'])
                 w.write('validation accuracy : {}\n'.format(round(100*log['val_overall_acc'], 2)))
                 w.write('validation class wise accuracy : {}\n'.format(log['val_cl_acc']))
-            
-#             print('training class wise accuracy', round(100*log['train_cl_acc'], 2))
             
             # evaluate model performance according to configured metric, save best checkpoint as model_best
             best = False
