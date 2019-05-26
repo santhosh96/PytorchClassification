@@ -23,10 +23,6 @@ def filereader(datapath,file):
 		if 'labels' in entry:
 			target = entry['labels']
 				
-	# reshaping the numpy array
-	data = np.vstack(data).reshape(-1, 3, 32, 32)
-	# transposing the array with the format of (32x32x3)
-	data = data.transpose((0, 2, 3, 1))
 	# returning the zip od data and target
 	if 'target' in entry:
 		return [data.astype('uint8'), np.array(target)]
