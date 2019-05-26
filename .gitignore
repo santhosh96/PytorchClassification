@@ -4,4 +4,5 @@
 .ipynb_checkpoints/
 __pycache__/
 saved/
+pytorchclassification/
 data/cifar-10-batches-py/
