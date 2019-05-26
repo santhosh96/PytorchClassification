@@ -112,6 +112,7 @@ def main(config, resume, target_class):
     
     with open(file_name,'w') as fh:
         fh.writelines('Accuracy of the model : {}\n\n'.format(round(100*accuracy, 2)))
+        fh.write('Classification report : \n\n')
         fh.writelines(cl_report)
         
     
