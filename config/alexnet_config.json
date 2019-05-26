@@ -1,6 +1,9 @@
 {
     "name": "CIFAR10",
+    
     "n_gpu": 1,
+    
+    "gpu_id": 1,
     
     "dataextract": {
         "type": "Extractor",
@@ -25,7 +28,7 @@
     },
     
     "testloader": {
-        "type": "DataLoader",
+        "type": "TestLoader",
         "args": {
             "data_dir": "data/cifar-10-batches-py",
             "file": "test_batch",
@@ -71,13 +74,13 @@
     },
     
     "trainer": {
-        "epochs": 50,
+        "epochs": 100,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         
         "monitor": "min val_loss",
-        "early_stop": 30
+        "early_stop": 10
     }
 
 }
